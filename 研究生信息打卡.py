@@ -1,6 +1,11 @@
+# -*- coding: utf-8 -*-
+# @Author  : cccht
+# @Time    : 2022/3/10 18:33
+# @Github  : https://github.com/cccht
+
 import base64
 import json
-
+import schedule
 import requests
 from urllib import parse
 from bs4 import BeautifulSoup
@@ -109,4 +114,6 @@ def index():
         index()
 
 
-index()
+schedule.every().day.at('10:00').do(index)
+while True:
+    schedule.run_pending()
