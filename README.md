@@ -30,9 +30,15 @@
 # 使用方式
 
 1. **下载**
+
 2. **安装模块（requests、Crypto等）**
+
+   安装 `Crypto` 模块可参考[Python3.8 安装Crypto库 - cccht - 博客园 (cnblogs.com)](https://www.cnblogs.com/emmmmcccc/p/15990890.html)
+
 3. **填写相关信息（学号、密码）**
+
 4. **运行**
+
 5. **完成表单填写**
 
 # 说明
