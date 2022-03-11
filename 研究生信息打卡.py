@@ -5,7 +5,7 @@
 
 import base64
 import json
-import schedule
+# import schedule
 import requests
 from urllib import parse
 from bs4 import BeautifulSoup
@@ -114,6 +114,7 @@ def index():
         index()
 
 
-schedule.every().day.at('10:00').do(index)
-while True:
-    schedule.run_pending()
+index()
+#schedule.every().day.at('10:00').do(index)
+#while True:
+#    schedule.run_pending()
