@@ -53,7 +53,7 @@ def index():
         }
         data_login = "loginForm=%7B%22loginId%22%3A%22" + stu_id + "%22%2C%22password%22%3A%22" + parse.quote(
             rsa_password) + "%22%2C%22verifyCode%22%3Anull%2C%22isWeekPassword%22%3Afalse%7D&token=" + token
-        requests.post(signin_url, data=data_login, headers=headers)
+        print(requests.post(signin_url, data=data_login, headers=headers).text)
 
         mrjkdk_url = "https://gms.qust.edu.cn/efm/collection/enterListTodoCollection?categoryId=mrjkdk"
         mrjkdk = requests.post(mrjkdk_url, data={'token': token}, headers=headers)
