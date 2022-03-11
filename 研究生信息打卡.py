@@ -22,6 +22,7 @@ config_url = "https://gms.qust.edu.cn/sysCommon/getEzConfig"
 
 
 def index():
+    print('打卡程序已运行...')
     try:
         headers = {
             'upgrade-insecure-requests': '1',
