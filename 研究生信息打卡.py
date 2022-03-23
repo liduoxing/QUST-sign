@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # @Author  : cccht
-# @Time    : 2022/3/16 22:08
+# @Time    : 2022/3/23 10:08
 # @Github  : https://github.com/cccht
 
 
@@ -72,38 +72,35 @@ class qust_gms():
             print("\n# 已登录")
             self.get_form()
         else:
-            print("账号或密码错误，请登陆 https://gms.qust.edu.cn/login/enterLogin 确认密码！")
+            print("\n账号或密码错误，请登陆 https://gms.qust.edu.cn/login/enterLogin 确认密码！")
             input()
             sys.exit(0)
 
     def get_form(self):
-        try:
-            headers = {
-                'cookie': 'JSESSIONID=' + self.token,
-                'origin': 'https://gms.qust.edu.cn',
-                'referer': 'https://gms.qust.edu.cn/login/enterLogin',
-                'x-requested-with': 'XMLHttpRequest',
-                'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
-                'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 Edg/98.0.1108.62'
-            }
-            mrjkdk_url = "https://gms.qust.edu.cn/efm/collection/enterListTodoCollection?categoryId=mrjkdk"
-            mrjkdk = requests.post(mrjkdk_url, data={'token': self.token}, headers=headers)
-            soup = BeautifulSoup(mrjkdk.text, "html.parser")
-            self.data_id_1 = soup.find(class_='card-btn').attrs['data-id']
+        headers = {
+            'cookie': 'JSESSIONID=' + self.token,
+            'origin': 'https://gms.qust.edu.cn',
+            'referer': 'https://gms.qust.edu.cn/login/enterLogin',
+            'x-requested-with': 'XMLHttpRequest',
+            'content-type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36 Edg/98.0.1108.62'
+        }
+        mrjkdk_url = "https://gms.qust.edu.cn/efm/collection/enterListTodoCollection?categoryId=mrjkdk"
+        mrjkdk = requests.post(mrjkdk_url, data={'token': self.token}, headers=headers)
+        soup = BeautifulSoup(mrjkdk.text, "html.parser")
+        self.data_id_1 = soup.find(class_='card-btn').attrs['data-id']
+        enterListRepeatedCollectionData_url = "https://gms.qust.edu.cn/efm/collection/enterListRepeatedCollectionData/" + self.data_id_1
+        enterListRepeatedCollectionData = requests.post(enterListRepeatedCollectionData_url,
+                                                        data={'token': self.token},
+                                                        headers=headers)
+        soup = BeautifulSoup(enterListRepeatedCollectionData.text, "html.parser")
+        self.data_id_2 = soup.find(class_='card-btn').attrs['data-id']
+        enterViewCollectionData_url = "https://gms.qust.edu.cn/efm/collection/enterViewCollectionData/" + self.data_id_2
+        requests.post(enterViewCollectionData_url, data={'token': self.token}, headers=headers)
 
-            enterListRepeatedCollectionData_url = "https://gms.qust.edu.cn/efm/collection/enterListRepeatedCollectionData/" + self.data_id_1
-            enterListRepeatedCollectionData = requests.post(enterListRepeatedCollectionData_url,
-                                                            data={'token': self.token},
-                                                            headers=headers)
-            soup = BeautifulSoup(enterListRepeatedCollectionData.text, "html.parser")
-            self.data_id_2 = soup.find(class_='card-btn').attrs['data-id']
+        print("\n# 已获取表单数据")
+        self.submit_form()  # 调用提交
 
-            enterViewCollectionData_url = "https://gms.qust.edu.cn/efm/collection/enterViewCollectionData/" + self.data_id_2
-            requests.post(enterViewCollectionData_url, data={'token': self.token}, headers=headers)
-            print("\n# 已获取表单数据")
-            self.submit_form()  # 调用提交
-        except:
-            self.get_form()
 
     def submit_form(self):
         print("\n# 正在提交")
@@ -140,18 +137,28 @@ class qust_gms():
             send_url = 'https://sctapi.ftqq.com/' + server_key + '.send'
             requests.post(send_url, data, headers=header)
 
-        if json.loads(submitCollectionData.text)['code'] == 1:
-            data = {
-                'title': '研究生打卡成功！',
-                'desp': '# 打卡成功！阴霾终将散去，让我们携手共克时艰！加油！！！',
-            }
-            send_message(data, self.server_key)
-        else:
+        # print(submitCollectionData.text)
+        try:
+            if json.loads(submitCollectionData.text)['code'] == 1:
+                data = {
+                    'title': '研究生打卡成功！',
+                    'desp': '# 打卡成功！阴霾终将散去，让我们携手共克时艰！加油！！！',
+                }
+                send_message(data, self.server_key)
+            else:
+                data = {
+                    'title': '研究生打卡失败！',
+                    'desp': '# 打卡失败，再次运行或者手动打卡吧~~~',
+                }
+                send_message(data, self.server_key)
+        except:
+            print("或许您已提交打卡，请您前往网站查看。")
             data = {
                 'title': '研究生打卡失败！',
-                'desp': '# 打卡失败，再次运行或者手动打卡吧~~~',
+                'desp': submitCollectionData.text,
             }
             send_message(data, self.server_key)
+            return None
 
     def index(self):
         print('\n# 打卡已启动')
