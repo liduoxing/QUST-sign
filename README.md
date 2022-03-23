@@ -9,6 +9,8 @@
 
 由于目前运行状态尚可，未考虑更多错误情况，之后如果有其他情况会再更新
 
+## exe版本（即Windows可直接运行）链接：https://github.com/cccht/QUST-sign/releases
+
 ## 最近更新
 
 ### 2022.3.23 v1.1
