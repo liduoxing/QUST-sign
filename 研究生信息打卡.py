@@ -4,6 +4,11 @@
 # @Github  : https://github.com/cccht
 
 
+#安装模块命令
+#pip install schedule
+#pip install bs4
+#pip install pycryptodome
+
 import base64
 import json
 import pathlib
@@ -135,7 +140,11 @@ class qust_gms():
                 'Content-type': 'application/x-www-form-urlencoded',
             }
             send_url = 'https://sctapi.ftqq.com/' + server_key + '.send'
-            requests.post(send_url, data, headers=header)
+            proxies = {
+                "http": "http://10.9.20.5:10810",
+                "https": "http://10.9.20.5:10810",
+            }
+            requests.post(send_url, data, headers=header, proxies=proxies)
 
         # print(submitCollectionData.text)
         try:
