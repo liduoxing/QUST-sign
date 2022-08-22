@@ -9,9 +9,15 @@
 
 由于目前运行状态尚可，未考虑更多错误情况，之后如果有其他情况会再更新
 
-## exe版本（即Windows可直接运行）链接：https://github.com/cccht/QUST-sign/releases
+## exe版本（即Windows可直接运行）
+## 链接：https://github.com/cccht/QUST-sign/releases
 
 ## 最近更新
+
+### 2022.8.22 v1.2
+原因：考虑到放假位置需要修改；上一版本耗费CPU资源较高；
+更新内容：添加修改位置；修改睡眠时间降低CPU资源占用；修改打卡定时，默认为早7点，并且运行即打卡一次再进入等待；
+温馨提示：Linux后台运行命令 `nohup python3 -u 研究生信息打卡.py >/home/log 2>&1 &`
 
 ### 2022.3.23 v1.1
 
@@ -91,4 +97,4 @@
 
 如果你觉得对你有帮助也可以稍微微来杯奶茶~
 
-![支付宝](http://52.175.18.202:8888/down/iGicPQgzMdG2)
+![支付宝]([http://52.175.18.202:8888/down/iGicPQgzMdG2](https://github.com/cccht/QUST-sign/blob/main/zfb.jpg?raw=true))
