@@ -1,13 +1,17 @@
 # -*- coding: utf-8 -*-
 # @Author  : cccht
-# @Time    : 2022/3/23 10:08
+# @Time    : 2022/8/22 16:41
 # @Github  : https://github.com/cccht
 
 
-#安装模块命令
-#pip install schedule
-#pip install bs4
-#pip install pycryptodome
+# 安装模块命令
+# pip install schedule
+# pip install bs4
+# pip install pycryptodome
+# pip install requests
+
+# linux 后台运行命令
+# nohup python3 -u 研究生信息打卡.py >/home/log 2>&1 &
 
 import base64
 import json
@@ -26,7 +30,7 @@ from Crypto.Cipher import PKCS1_v1_5 as Cipher_pkcs1_v1_5
 
 
 class qust_gms():
-    def __init__(self, stu_id, stu_password, server_key, schedule_check, schedule_time):
+    def __init__(self, stu_id, stu_password, server_key, szd, szd_text):
         self.stu_id = stu_id
         self.stu_password = stu_password
         self.server_key = server_key
@@ -36,8 +40,8 @@ class qust_gms():
         self.token = ""
         self.data_id_1 = ""
         self.data_id_2 = ""
-        self.schedule_check = schedule_check
-        self.schedule_time = schedule_time
+        self.szd = szd
+        self.szd_text = szd_text
 
     def login(self):
         headers = {
@@ -106,7 +110,6 @@ class qust_gms():
         print("\n# 已获取表单数据")
         self.submit_form()  # 调用提交
 
-
     def submit_form(self):
         print("\n# 正在提交")
         headers_submitCollectionData = {
@@ -120,9 +123,9 @@ class qust_gms():
         data = {
             "id": 'null',
             "collectId": self.data_id_1,
-            "data": {"szd": "370212", "tw": "37.2℃及以下", "stzk": "健康", "zgfxq": "否", "mj": "否", "ysbl": "否",
+            "data": {"szd": self.szd, "tw": "37.2℃及以下", "stzk": "健康", "zgfxq": "否", "mj": "否", "ysbl": "否",
                      "yxgl": "否",
-                     "jkmys": "绿色", "cn": "是", "szd_text": "山东 - 青岛市 - 崂山区", "tw_text": "37.2℃及以下",
+                     "jkmys": "绿色", "cn": "是", "szd_text": self.szd_text, "tw_text": "37.2℃及以下",
                      "stzk_text": "健康",
                      "zgfxq_text": "否", "mj_text": "否", "ysbl_text": "否", "yxgl_text": "否", "jkmys_text": "绿色",
                      "cn_text": "是"},
@@ -140,13 +143,8 @@ class qust_gms():
                 'Content-type': 'application/x-www-form-urlencoded',
             }
             send_url = 'https://sctapi.ftqq.com/' + server_key + '.send'
-            proxies = {
-                "http": "http://10.9.20.5:10810",
-                "https": "http://10.9.20.5:10810",
-            }
-            requests.post(send_url, data, headers=header, proxies=proxies)
+            requests.post(send_url, data, headers=header)
 
-        # print(submitCollectionData.text)
         try:
             if json.loads(submitCollectionData.text)['code'] == 1:
                 data = {
@@ -169,15 +167,31 @@ class qust_gms():
             send_message(data, self.server_key)
             return None
 
-    def index(self):
+
+def index():
+    try:
         print('\n# 打卡已启动')
-        if self.schedule_check:
-            print('\n# 正在等待循环时间')
-            schedule.every().day.at(self.schedule_time).do(self.login)
-            while True:
-                schedule.run_pending()
-        else:
-            self.login()
+        f = open('qust_gms.json', 'r', encoding='utf-8')
+        content = f.read()
+        info_list = json.loads(content)
+        f.close()
+        for info in info_list:
+            if info['username'] == "" or info['password'] == "":
+                print("请先填写完整 qust_gms.json 配置文件!按回车关闭。")
+                input()
+                return None
+            username = info['username']
+            password = info['password']
+            server_key = info['server_key']
+            szd = info['szd']
+            szd_text = info['szd_text']
+            print("\n# {} 账号信息已载入".format(username))
+            qust_gms(username, password, server_key, szd, szd_text).login()
+    except:
+        # os.remove('qust_gms.json')  # 删除配置文件
+        print("\n# 加载配置文件出错，请尝试修改，请重新运行此程序!按回车关闭。")
+        input()
+        sys.exit(0)
 
 
 def op_help():
@@ -202,8 +216,7 @@ def op_help():
 
 def main():
     # 此处处理配置文件，如果无则创建，如果有则读取相关信息
-    global username, password, server_key, schedule_check, schedule_time
-    # if not os.path.exists('qust_gms.json'):
+    std_list = []
     if not pathlib.Path("qust_gms.json").is_file():
         print(op_help())
         action_str = input()
@@ -212,61 +225,52 @@ def main():
             time.sleep(5)
             sys.exit(0)
         os.system('cls')
-        print("请输入学号：")
-        username = input()
-        print("\n请输入密码(使用 https://gms.qust.edu.cn/login/enterLogin 验证)：")
-        password = input()
-        print("\n请输入server酱密钥(用于推送打卡情况，可不填)：")
-        server_key = input()
-        schedule_check = False
-        hour = '07'
-        minute = '00'
-        print("\n是否需要定时功能(需要请输入 1 并回车)：")
-        check = input()
-        if check:
-            schedule_check = True
-            print("\n请输入几时(注意：7 点输入 07，下午 1 点输入 13)：")
-            hour = input()
-            print("\n请输入几分(注意：7 分输入 07，整点输入 00)：")
-            minute = input()
-        schedule_time = hour + ':' + minute
-        a = {
-            "username": username,
-            "password": password,
-            "server_key": server_key,
-            "schedule_check": schedule_check,
-            "schedule_time": schedule_time
-        }
-        print(server_key)
-        b = json.dumps(a, ensure_ascii=False)
-        f = open('./qust_gms.json', 'w', encoding="utf-8")
+        f = open('./qust_gms.json', 'a+', encoding="utf-8")
+        while True:
+            print("\n请输入学号：")
+            username = input()
+            print("\n请输入密码(使用 https://gms.qust.edu.cn/login/enterLogin 验证)：")
+            password = input()
+            print("\n请输入server酱密钥(用于推送打卡情况，可不填)：")
+            server_key = input()
+            szd = "370212"
+            szd_text = "山东 - 青岛市 - 崂山区"
+            print("\n是否修改打卡地址(默认为青岛市-崂山区，修改输入 1)：")
+            check = input()
+            if check:
+                print("\n请输入区号(例如：青岛崂山为 370212)：")
+                szd = input()
+                print("\n请输入省份(例如：山东 具体可参照打卡系统名称)：")
+                szd_text_1 = input()
+                print("\n请输入市区(例如：青岛市 具体可参照打卡系统名称)：")
+                szd_text_2 = input()
+                print("\n请输入县(例如：崂山区 具体可参照打卡系统名称)：")
+                szd_text_3 = input()
+                szd_text = szd_text_1 + " - " + szd_text_2 + " - " + szd_text_3
+            a = {
+                "username": username,
+                "password": password,
+                "server_key": server_key,
+                "szd": szd,
+                "szd_text": szd_text
+            }
+            print(server_key)
+            std_list.append(a)
+            print("\n是否继续添加(需要请输入 1 并回车)：")
+            continue_input = input()
+            if continue_input != '1':
+                break
+
+        b = json.dumps(std_list, ensure_ascii=False)
         f.write(b)
         f.close()
     else:
-        try:
-            f = open('qust_gms.json', 'r', encoding='utf-8')
-            content = f.read()
-            qust = json.loads(content)
-            f.close()
-            if qust['username'] == "" or qust['password'] == "":
-                print("请先填写完整 qust_gms.json 配置文件!按回车关闭。")
-                input()
-                return None
-            username = qust['username']
-            password = qust['password']
-            server_key = qust['server_key']
-            schedule_check = qust['schedule_check']
-            schedule_time = qust['schedule_time']
-        except:
-            os.remove('qust_gms.json')
-            print("加载配置文件出错，请重新运行此程序!按回车关闭。")
-            input()
-            sys.exit(0)
-    os.system('cls')
-    print("# 账号信息已载入")
-    qust_gms(username, password, server_key, schedule_check, schedule_time).index()
-    input()
-    sys.exit(0)
+        index()
+        print('\n# 正在等待循环时间')
+        schedule.every().day.at("07:00").do(index)
+        while True:
+            schedule.run_pending()
+            time.sleep(59)
 
 
 main()
