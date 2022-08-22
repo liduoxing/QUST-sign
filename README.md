@@ -97,4 +97,4 @@
 
 如果你觉得对你有帮助也可以稍微微来杯奶茶~
 
-![支付宝]([http://52.175.18.202:8888/down/iGicPQgzMdG2](https://github.com/cccht/QUST-sign/blob/main/zfb.jpg?raw=true))
+![支付宝]([https://github.com/cccht/QUST-sign/blob/main/zfb.jpg?raw=true])
