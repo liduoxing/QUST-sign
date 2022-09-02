@@ -10,7 +10,7 @@
 # pip install requests
 
 # linux 后台运行命令
-# nohup python3 -u 研究生信息打卡.py >/home/log 2>&1 &
+# nohup python3 -u 研究生信息打卡new接口.py >/home/log 2>&1 &
 
 import json
 import pathlib
