@@ -14,6 +14,12 @@
 
 ## 最近更新
 
+### 2022.9.2
+
+原因：开发了手机端接口进行登录
+
+更新内容：添加手机端接口文件，无需安装加密模块即可登录
+
 ### 2022.8.22 v1.2
 
 原因：考虑到放假位置需要修改；上一版本耗费CPU资源较高；
@@ -62,7 +68,7 @@
 
 2. **安装模块（requests、Crypto等）**
 
-   安装 `Crypto` 模块可参考[Python3.8 安装Crypto库 - cccht - 博客园 (cnblogs.com)](https://www.cnblogs.com/emmmmcccc/p/15990890.html)
+   安装 `Crypto` 模块可参考[Python3.8 安装Crypto库 - cccht - 博客园 (cnblogs.com)](https://www.cnblogs.com/emmmmcccc/p/15990890.html)；使用new接口版本无需安装加密模块
 
 3. **填写相关信息（学号、密码）**
 
@@ -100,4 +106,4 @@
 
 如果你觉得对你有帮助也可以稍微微来杯奶茶~
 
-![支付宝]([https://github.com/cccht/QUST-sign/blob/main/zfb.jpg])
+![支付宝](https://github.com/cccht/QUST-sign/blob/main/zfb.jpg)
